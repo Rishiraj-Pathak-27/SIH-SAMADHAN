@@ -144,8 +144,8 @@ export default function HomePage() {
                     <p className="text-sm text-muted-foreground">Manage all reports and analytics</p>
                   </div>
                 </CardContent>
-              </Link>
-            </Card>
+              </Card>
+            </Link>
           )}
         </div>
 

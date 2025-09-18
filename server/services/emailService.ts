@@ -28,8 +28,8 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       to: params.to,
       from: params.from || 'noreply@civicreport.com',
       subject: params.subject,
-      text: params.text,
-      html: params.html,
+      text: params.text || '',
+      html: params.html || '',
     });
     return true;
   } catch (error) {
