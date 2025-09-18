@@ -98,21 +98,30 @@ export default function ReportSubmissionPage() {
         const { latitude, longitude } = position.coords;
         setFormData(prev => ({ ...prev, latitude, longitude }));
 
-        // Try to get address from coordinates
+        // Try to get address from coordinates using Nominatim (free alternative)
         try {
           const response = await fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${process.env.VITE_OPENCAGE_API_KEY || 'demo'}`
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                'User-Agent': 'CivicReport/1.0'
+              }
+            }
           );
-          const data = await response.json();
           
-          if (data.results && data.results[0]) {
-            setFormData(prev => ({ 
-              ...prev, 
-              address: data.results[0].formatted 
-            }));
+          if (response.ok) {
+            const data = await response.json();
+            
+            if (data.display_name) {
+              setFormData(prev => ({ 
+                ...prev, 
+                address: data.display_name 
+              }));
+            }
           }
         } catch (error) {
-          console.error("Error getting address:", error);
+          // Address resolution failed, but this is not critical for report submission
+          console.log("Address resolution unavailable, coordinates will still be saved");
         }
 
         setLocationLoading(false);

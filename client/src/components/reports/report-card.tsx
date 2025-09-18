@@ -1,7 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "./status-badge";
-import { Clock, MapPin, User, Image as ImageIcon } from "lucide-react";
+import { Clock, MapPin, User, Image as ImageIcon, Download } from "lucide-react";
 import { Report } from "@shared/schema";
+import { generateReportPDF } from "@/lib/pdf-utils";
 
 interface ReportCardProps {
   report: Report;
@@ -25,6 +27,11 @@ export function ReportCard({ report, onClick }: ReportCardProps) {
     } else {
       return reportDate.toLocaleDateString();
     }
+  };
+
+  const handleDownloadPDF = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    generateReportPDF(report);
   };
 
   return (
@@ -67,22 +74,35 @@ export function ReportCard({ report, onClick }: ReportCardProps) {
               {report.description}
             </p>
             
-            <div className="flex items-center text-xs text-muted-foreground space-x-4">
-              <div className="flex items-center">
-                <Clock className="w-3 h-3 mr-1" />
-                <span data-testid={`text-date-${report.id}`}>
-                  {formatDate(report.createdAt || new Date())}
-                </span>
-              </div>
-              
-              {report.address && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center text-xs text-muted-foreground space-x-4">
                 <div className="flex items-center">
-                  <MapPin className="w-3 h-3 mr-1" />
-                  <span className="truncate" data-testid={`text-address-${report.id}`}>
-                    {report.address}
+                  <Clock className="w-3 h-3 mr-1" />
+                  <span data-testid={`text-date-${report.id}`}>
+                    {formatDate(report.createdAt || new Date())}
                   </span>
                 </div>
-              )}
+                
+                {report.address && (
+                  <div className="flex items-center">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    <span className="truncate" data-testid={`text-address-${report.id}`}>
+                      {report.address}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDownloadPDF}
+                className="h-6 w-6 p-0 hover:bg-primary/10"
+                data-testid={`button-download-pdf-${report.id}`}
+                title="Download PDF"
+              >
+                <Download className="w-3 h-3" />
+              </Button>
             </div>
           </div>
         </div>
